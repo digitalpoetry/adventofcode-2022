@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+advent-of-code-data = "*"
+networkx = "*"
+matplotlib = "*"
+pygraphviz = "*"
+
+[dev-packages]
+pytest = "*"
+yapf = "*"
+mypy = "*"
+
+[requires]
+python_version = "3.11"
