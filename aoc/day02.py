@@ -17,6 +17,8 @@ class MatchResult(Enum):
                 return MatchResult.DRAW
             case 'Z':
                 return MatchResult.WIN
+            case _:
+                raise ValueError(f"Invalid match result {s}")
 
 
 class Shape(Enum):
@@ -87,7 +89,7 @@ def part2(input_data: str) -> int:
         a, b = line.split()
         opponent_play = Shape.from_str(a)
         desired_result = MatchResult.from_str(b)
-        strategy_play = strategy.get((opponent_play, desired_result))
+        strategy_play = strategy[(opponent_play, desired_result)]
         matches.append((opponent_play, strategy_play))
     return sum(a.play(b) for a, b in matches)
 

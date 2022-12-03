@@ -1,4 +1,5 @@
 from typing import List
+
 from aocd.models import Puzzle
 
 
@@ -6,7 +7,8 @@ def parse(lines: str) -> List[int]:
     sections = lines.split('\n\n')
     calories_carried = []
     for section in sections:
-         calories_carried.append(sum(int(line) for line in section.splitlines()))
+        c = sum(int(line) for line in section.splitlines())
+        calories_carried.append(c)
     return calories_carried
 
 
