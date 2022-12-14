@@ -1,7 +1,7 @@
 import math
 import re
 from collections import deque
-from typing import Sequence, List, Optional, Tuple, Callable, Any
+from typing import Sequence, List, Optional, Tuple, Callable, Match, Dict, Any
 
 from aocd.models import Puzzle
 
@@ -25,7 +25,7 @@ class Monkey:
         self.false_monkey = false_monkey
         self.true_monkey = true_monkey
 
-    def throw_item(self, worry_reduction_function) -> (int, int):
+    def throw_item(self, worry_reduction_function) -> Tuple[int, int]:
         assert self.items, "this monkey has no items to throw"
         self.n_inspections += 1
         worry_level = self.items.popleft()
@@ -44,6 +44,16 @@ def int_or_none(s: str) -> Optional[int]:
         return None
 
 
+def operation_function(operator: str) -> Callable[[Any], int]:
+    match operator:
+        case '+':
+            return sum
+        case '*':
+            return math.prod
+        case _:
+            raise NotImplementedError
+
+
 def parse_monkey(section: str) -> Monkey:
     lines = section.splitlines()
     matches = {
@@ -55,15 +65,15 @@ def parse_monkey(section: str) -> Monkey:
         'false_monkey': re.search(r'If false: throw to monkey (\d+)', lines[5]),
     }
     if all(matches.values()):
-        monkey_id = int(matches['monkey_id'].group(1))
-        items = [int(i) for i in matches['items'].group(1).split(", ")]
-        a, operator, b = matches['operator'].group(1).split()
-        assert operator in ('+', '*')
-        op = sum if operator == '+' else math.prod
+        m: Dict[str, Match[str]] = matches  # type: ignore
+        monkey_id = int(m['monkey_id'].group(1))
+        items = [int(i) for i in m['items'].group(1).split(", ")]
+        a, operator, b = m['operator'].group(1).split()
+        op = operation_function(operator)
         op_values = int_or_none(a), int_or_none(b)
-        divisor = int(matches['divisor'].group(1))
-        true_monkey = int(matches['true_monkey'].group(1))
-        false_monkey = int(matches['false_monkey'].group(1))
+        divisor = int(m['divisor'].group(1))
+        true_monkey = int(m['true_monkey'].group(1))
+        false_monkey = int(m['false_monkey'].group(1))
     else:
         raise ValueError
     return Monkey(monkey_id, items, op, op_values, divisor, true_monkey, false_monkey)
